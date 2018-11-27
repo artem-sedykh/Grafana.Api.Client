@@ -4,12 +4,13 @@
     <TargetFrameworks>netstandard2.0;net45</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <RootNamespace>Grafana</RootNamespace>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
     <Authors>Artem Sedykh</Authors>
     <Description>Shared assembly for Grafana.Api.Client</Description>
     <PackageTags>Grafana</PackageTags>
     <IncludeSymbols>true</IncludeSymbols>
     <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://github.com/artem-sedykh/Grafana.Api.Client</PackageProjectUrl>
   </PropertyGroup>
 
 </Project>
