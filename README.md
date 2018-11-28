@@ -46,8 +46,8 @@ annotationService.Create(new CreateAnnotationRequest
 
 #### adding grafana api key
 
-![ApiKey](http://docs.grafana.org/img/docs/v46/annotations.png)
+![ApiKey](https://raw.githubusercontent.com/artem-sedykh/Grafana.Api.Client/master/images/grafana_api_key.png)
 
 #### set dashboard uid
 
-![ApiKey](http://docs.grafana.org/img/docs/v46/annotations.png)
+![dashboard uid](https://raw.githubusercontent.com/artem-sedykh/Grafana.Api.Client/master/images/dashboarduid.png)
