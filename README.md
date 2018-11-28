@@ -20,6 +20,7 @@ var annotationService = new AnnotationService(uri, apiKey);
 
 var dashboardService = new DashboardService(uri, apiKey);
 
+//find dashboard id
 //Uid may be edited in dashboard settings
 var dashboardResponse = dashboardService.GetDashboardByUid("test_dashboard");
 
