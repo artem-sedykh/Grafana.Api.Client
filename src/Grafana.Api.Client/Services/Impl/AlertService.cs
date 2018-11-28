@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Grafana.Models;
 
 namespace Grafana.Services.Impl
@@ -15,6 +16,16 @@ namespace Grafana.Services.Impl
         public Alert[] GetAlerts(int[] dashboardIds = null, int? panelId = null, string query = null, AlertState[] states = null,
             int? limit = null, int[] folderIds = null, string dashboardQuery = null, string[] dashboardTags = null)
         {
+            var task = Task.Run(() => GetAlertsAsync(dashboardIds, panelId, query, states, limit, folderIds, dashboardQuery, dashboardTags));
+
+            task.Wait();
+
+            return task.Result;
+        }
+
+        public async Task<Alert[]> GetAlertsAsync(int[] dashboardIds = null, int? panelId = null, string query = null, AlertState[] states = null,
+            int? limit = null, int[] folderIds = null, string dashboardQuery = null, string[] dashboardTags = null)
+        {
             var parameters = new QueryStringParameters();
 
             if (dashboardIds != null && dashboardIds.Length > 0)
@@ -26,7 +37,7 @@ namespace Grafana.Services.Impl
             if (panelId != null)
                 parameters.Add(nameof(panelId), panelId);
 
-            if(string.IsNullOrWhiteSpace(query) == false)
+            if (string.IsNullOrWhiteSpace(query) == false)
                 parameters.Add(nameof(query), query);
 
             if (states != null && states.Length > 0)
@@ -53,32 +64,59 @@ namespace Grafana.Services.Impl
                     parameters.Add("dashboardTag", dashboardTag);
             }
 
-            var response = ExecuteGetRequest<Alert[]>("/api/alerts", parameters, _authentication);
+            var response = await ExecuteGetRequestAsync<Alert[]>("/api/alerts", parameters, _authentication);
 
             return response;
         }
 
         public Alert GetAlert(int alertId)
         {
-            var response = ExecuteGetRequest<Alert>($"/api/alerts/{alertId}", null, _authentication);
+            var task = Task.Run(() => GetAlertAsync(alertId));
+
+            task.Wait();
+
+            return task.Result;
+        }
+
+        public async Task<Alert> GetAlertAsync(int alertId)
+        {
+            var response = await ExecuteGetRequestAsync<Alert>($"/api/alerts/{alertId}", null, _authentication);
 
             return response;
         }
 
         public PausedAlertResponse PauseAlert(int alertId, bool paused)
         {
+            var task = Task.Run(() => PauseAlertAsync(alertId, paused));
+
+            task.Wait();
+
+            return task.Result;
+        }
+
+        public async Task<PausedAlertResponse> PauseAlertAsync(int alertId, bool paused)
+        {
             var request = new { Paused = paused };
 
-            var response = ExecutePostRequest<PausedAlertResponse, object>($"/api/alerts/{alertId}/pause", null, request, _authentication);
+            var response = await ExecutePostRequestAsync<PausedAlertResponse, object>($"/api/alerts/{alertId}/pause", null, request, _authentication);
 
             return response;
         }
 
         public PausedAllAlertsResponse PauseAllAlerts(bool paused)
         {
+            var task = Task.Run(() => PauseAllAlertsAsync(paused));
+
+            task.Wait();
+
+            return task.Result;
+        }
+
+        public async  Task<PausedAllAlertsResponse> PauseAllAlertsAsync(bool paused)
+        {
             var request = new { Paused = paused };
 
-            var response = ExecutePostRequest<PausedAllAlertsResponse, object>("/api/admin/pause-all-alerts", null, request, _authentication);
+            var response = await ExecutePostRequestAsync<PausedAllAlertsResponse, object>("/api/admin/pause-all-alerts", null, request, _authentication);
 
             return response;
         }

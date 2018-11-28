@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Grafana.Models;
 
 namespace Grafana.Services.Impl
@@ -14,7 +15,16 @@ namespace Grafana.Services.Impl
 
         public AlertNotification[] GetAlertNotifications()
         {
-            var response = ExecuteGetRequest<AlertNotification[]>("/api/alert-notifications", null, _authentication);
+            var task = Task.Run(GetAlertNotificationsAsync);
+
+            task.Wait();
+
+            return task.Result;
+        }
+
+        public async Task<AlertNotification[]> GetAlertNotificationsAsync()
+        {
+            var response = await ExecuteGetRequestAsync<AlertNotification[]>("/api/alert-notifications", null, _authentication);
 
             return response;
         }
@@ -24,7 +34,19 @@ namespace Grafana.Services.Impl
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            var response = ExecutePostRequest<CreateAlertNotificationResponse, CreateAlertNotificationRequest>("/api/alert-notifications", null, request, _authentication);
+            var task = Task.Run(() => CreateAlertNotificationAsync(request));
+
+            task.Wait();
+
+            return task.Result;
+        }
+
+        public async Task<CreateAlertNotificationResponse> CreateAlertNotificationAsync(CreateAlertNotificationRequest request)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            var response = await ExecutePostRequestAsync<CreateAlertNotificationResponse, CreateAlertNotificationRequest>("/api/alert-notifications", null, request, _authentication);
 
             return response;
         }
@@ -34,14 +56,35 @@ namespace Grafana.Services.Impl
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            var response = ExecutePutRequest<UpdateAlertNotificationResponse, UpdateAlertNotificationRequest>($"/api/alert-notifications/{request.Id}", null, request, _authentication);
+            var task = Task.Run(() => UpdateAlertNotificationAsync(request));
+
+            task.Wait();
+
+            return task.Result;
+        }
+
+        public async Task<UpdateAlertNotificationResponse> UpdateAlertNotificationAsync(UpdateAlertNotificationRequest request)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            var response = await ExecutePutRequestAsync<UpdateAlertNotificationResponse, UpdateAlertNotificationRequest>($"/api/alert-notifications/{request.Id}", null, request, _authentication);
 
             return response;
         }
 
         public MessageResponse DeleteAlertNotification(int notificationId)
         {
-            var response = ExecuteDeleteRequest<MessageResponse, object>($"/api/alert-notifications/{notificationId}", null, null, _authentication);
+            var task = Task.Run(() => DeleteAlertNotificationAsync(notificationId));
+
+            task.Wait();
+
+            return task.Result;
+        }
+
+        public async Task<MessageResponse> DeleteAlertNotificationAsync(int notificationId)
+        {
+            var response = await ExecuteDeleteRequestAsync<MessageResponse, object>($"/api/alert-notifications/{notificationId}", null, null, _authentication);
 
             return response;
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Grafana.Models;
 
 namespace Grafana.Services.Impl
@@ -14,6 +15,18 @@ namespace Grafana.Services.Impl
         }
 
         public Annotation[] FindAnnotations(long? from = null, long? to = null, int limit = 100, int? alertId = null,
+            int? dashboardId = null, int? panelId = null, int? userId = null, AnnotationType? type = null,
+            string[] tags = null)
+        {
+            var task = Task.Run(() => FindAnnotationsAsync(from, to, limit, alertId, dashboardId, panelId, userId, type, tags));
+
+            task.Wait();
+
+            return task.Result;
+        }
+
+        public async Task<Annotation[]> FindAnnotationsAsync(long? from = null, long? to = null, int limit = 100,
+            int? alertId = null,
             int? dashboardId = null, int? panelId = null, int? userId = null, AnnotationType? type = null,
             string[] tags = null)
         {
@@ -48,7 +61,7 @@ namespace Grafana.Services.Impl
                     parameters.Add(nameof(tags), tag);
             }
 
-            var response = ExecuteGetRequest<Annotation[]>("/api/annotations", parameters, _authentication);
+            var response = await ExecuteGetRequestAsync<Annotation[]>("/api/annotations", parameters, _authentication);
 
             return response;
         }
@@ -58,7 +71,19 @@ namespace Grafana.Services.Impl
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            var response = ExecutePostRequest<CreateMessageResponse, CreateAnnotationRequest>("/api/annotations", null, request, _authentication);
+            var task = Task.Run(() => CreateAsync(request));
+
+            task.Wait();
+
+            return task.Result;
+        }
+
+        public async Task<CreateMessageResponse> CreateAsync(CreateAnnotationRequest request)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            var response = await ExecutePostRequestAsync<CreateMessageResponse, CreateAnnotationRequest>("/api/annotations", null, request, _authentication);
 
             return response;
         }
@@ -68,7 +93,19 @@ namespace Grafana.Services.Impl
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            var response = ExecutePostRequest<CreateGraphiteMessageResponse, CreateGraphiteAnnotationRequest>("/api/annotations/graphite", null, request, _authentication);
+            var task = Task.Run(() => CreateAsync(request));
+
+            task.Wait();
+
+            return task.Result;
+        }
+
+        public async Task<CreateGraphiteMessageResponse> CreateAsync(CreateGraphiteAnnotationRequest request)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            var response = await ExecutePostRequestAsync<CreateGraphiteMessageResponse, CreateGraphiteAnnotationRequest>("/api/annotations/graphite", null, request, _authentication);
 
             return response;
         }
@@ -78,21 +115,51 @@ namespace Grafana.Services.Impl
             if (request == null)
                 throw new ArgumentNullException(nameof(request));
 
-            var response = ExecutePutRequest<MessageResponse, UpdateAnnotationRequest>($"/api/annotations/{annotationId}", null, request, _authentication);
+            var task = Task.Run(() => UpdateAsync(annotationId, request));
+
+            task.Wait();
+
+            return task.Result;
+        }
+
+        public async Task<MessageResponse> UpdateAsync(int annotationId, UpdateAnnotationRequest request)
+        {
+            if (request == null)
+                throw new ArgumentNullException(nameof(request));
+
+            var response = await ExecutePutRequestAsync<MessageResponse, UpdateAnnotationRequest>($"/api/annotations/{annotationId}", null, request, _authentication);
 
             return response;
         }
 
         public MessageResponse Delete(int annotationId)
         {
-            var response = ExecuteDeleteRequest<MessageResponse, object>($"/api/annotations/{annotationId}", null, null, _authentication);
+            var task = Task.Run(() => Delete(annotationId));
+
+            task.Wait();
+
+            return task.Result;
+        }
+
+        public async Task<MessageResponse> DeleteAsync(int annotationId)
+        {
+            var response = await ExecuteDeleteRequestAsync<MessageResponse, object>($"/api/annotations/{annotationId}", null, null, _authentication);
 
             return response;
         }
 
         public MessageResponse DeleteByRegionId(int regionId)
         {
-            var response = ExecuteDeleteRequest<MessageResponse, object>($"/api/annotations/region/{regionId}", null, null, _authentication);
+            var task = Task.Run(() => DeleteByRegionIdAsync(regionId));
+
+            task.Wait();
+
+            return task.Result;
+        }
+
+        public async Task<MessageResponse> DeleteByRegionIdAsync(int regionId)
+        {
+            var response = await ExecuteDeleteRequestAsync<MessageResponse, object>($"/api/annotations/region/{regionId}", null, null, _authentication);
 
             return response;
         }
